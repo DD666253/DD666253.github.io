@@ -81,7 +81,7 @@ textarea{
 <!-- 弹窗：选择CMD或者语言学习 -->
 <div class="select-modal" id="selectPop">
   <div class="select-panel">
-    <h3>请选择功能</h3>
+    <h3>System Massage: 请选择功能</h3>
     <br>
     <button class="btn" onclick="openCmdWin();closeSelect()">Win CMD模拟器</button>
     <button class="btn" onclick="openLangDesktop();closeSelect()">进入语言学习模拟桌面</button>
@@ -92,11 +92,11 @@ textarea{
 <!-- HTML编辑器窗口 -->
 <div class="win98-window" id="winEditor" style="left:20px;top:100px;width:480px;height:340px">
   <div class="win98-titlebar">
-    <span>HTML 编辑器</span>
+    <span>System Massage: HTML 编辑器</span>
     <div class="win98-close" onclick="closeWin('winEditor')">×</div>
   </div>
   <div class="win98-body">
-    <textarea id="codeInput" placeholder="在这里编写HTML代码...">
+    <textarea id="codeInput" placeholder="System Massage: 在这里编写HTML代码...">
 <!DOCTYPE html>
 <html>
 <head>
@@ -114,7 +114,7 @@ textarea{
 <!-- HTML预览窗口 -->
 <div class="win98-window" id="winPreview" style="left:540px;top:100px;width:480px;height:340px">
   <div class="win98-titlebar">
-    <span>index.html View</span>
+    <span>System Massage: index.html View</span>
     <div class="win98-close" onclick="closeWin('winPreview')">×</div>
   </div>
   <div class="win98-body">
@@ -125,31 +125,31 @@ textarea{
 <!-- Win CMD模拟窗口 -->
 <div class="win98-window" id="winCmd" style="left:30px;top:120px;width:520px;height:360px">
   <div class="win98-titlebar">
-    <span>Windows CMD</span>
+    <span>System Massage: Windows CMD</span>
     <div class="win98-close" onclick="closeWin('winCmd')">×</div>
   </div>
   <div class="win98-body">
-    <div class="cmd-box" id="cmdOut">C:\Users\DD></div>
-    <input class="cmd-input" id="cmdIn" placeholder="输入命令回车执行" onkeydown="runCmd(event)">
+    <div class="cmd-box" id="cmdOut">System Massage: C:\Windows\Wine\System32\Admin></div>
+    <input class="cmd-input" id="cmdIn" placeholder="System Massage: 输入命令回车执行" onkeydown="runCmd(event)">
   </div>
 </div>
 
 <!-- 语言学习桌面+MicroSimu Edge浏览器 -->
 <div class="win98-window" id="winLang" style="left:100px;top:80px;width:650px;height:420px">
   <div class="win98-titlebar">
-    <span id="langWinTitle">Language Study Desktop</span>
+    <span id="langWinTitle">System Massage: Language Study Desktop</span>
     <div class="win98-close" onclick="closeWin('winLang')">×</div>
   </div>
   <div class="win98-body">
-    <p id="langTip">Default Language: English</p>
-    <button class="btn" onclick="switchLang()">切换中英文</button>
-    <button class="btn" onclick="openEdge()">打开MicroSimu Edge</button>
+    <p id="langTip">System Massage: Default Language: English</p>
+    <button class="btn" onclick="switchLang()">System Massage: 切换中英文</button>
+    <button class="btn" onclick="openEdge()">System Massage: 打开MicroSimu Edge</button>
     <!-- Edge浏览器面板 -->
     <div id="edgeBox" style="display:none;margin-top:10px;border:outset 2px #aaa">
       <div class="edge-menubar">
-        <span onclick="edgeSave()">文件</span>
-        <span onclick="edgeEdit()">编辑</span>
-        <span onclick="edgeHelp()">寻求帮助</span>
+        <span onclick="edgeSave()">System Massage: 文件</span>
+        <span onclick="edgeEdit()">System Massage: 编辑</span>
+        <span onclick="edgeHelp()">System Massage: 寻求帮助</span>
       </div>
       <div class="edge-content" id="edgeContent"></div>
     </div>
@@ -161,23 +161,28 @@ textarea{
 let isCn = false;
 // 一键打开编辑器+预览双窗口
 function openAllWindows(){
+  alert("System Massage: 即将加载HTML编辑套装窗口");
   document.getElementById("winEditor").style.display="block";
   document.getElementById("winPreview").style.display="block";
   renderPreview();
 }
 //关闭任意窗口
 function closeWin(id){
+  alert(`System Massage: 关闭窗口${id}`);
   document.getElementById(id).style.display="none";
 }
 // 选择弹窗开关
 function openStudySelect(){
+  alert("System Massage: 加载功能选择面板");
   document.getElementById("selectPop").style.display="flex";
 }
 function closeSelect(){
+  alert("System Massage: 关闭功能选择弹窗");
   document.getElementById("selectPop").style.display="none";
 }
 // CMD窗口开启
 function openCmdWin(){
+  alert("System Massage: 启动Wine架构CMD终端");
   document.getElementById("winCmd").style.display="block";
 }
 //语言桌面初始化，自动检测浏览器系统语言
@@ -185,41 +190,44 @@ function openLangDesktop(){
   let sysLang = navigator.language || navigator.userLanguage;
   isCn = sysLang.startsWith("zh");
   refreshLangUI();
+  alert("System Massage: 初始化语言学习桌面");
   document.getElementById("winLang").style.display="block";
 }
 //语言切换按钮
 function switchLang(){
   isCn = !isCn;
+  alert("System Massage: 执行界面语言切换");
   refreshLangUI();
 }
 function refreshLangUI(){
   let titleDom = document.getElementById("langWinTitle");
   let tipDom = document.getElementById("langTip");
   if(isCn){
-    titleDom.innerText = "编程语言学习桌面";
-    tipDom.innerText = "当前语言：中文";
+    titleDom.innerText = "System Massage: 编程语言学习桌面";
+    tipDom.innerText = "System Massage: 当前语言：中文";
   }else{
-    titleDom.innerText = "Language Study Desktop";
-    tipDom.innerText = "Current Language: English";
+    titleDom.innerText = "System Massage: Language Study Desktop";
+    tipDom.innerText = "System Massage: Current Language: English";
   }
 }
 //唤起模拟Edge浏览器
 function openEdge(){
+  alert("System Massage: 启动MicroSimu Edge模拟器");
   document.getElementById("edgeBox").style.display="block";
-  document.getElementById("edgeContent").innerText = "Edge模拟器加载完成";
+  document.getElementById("edgeContent").innerText = "System Massage: Edge模拟器加载完成";
 }
 //edge菜单栏功能
 function edgeSave(){
-  alert("执行：保存 edge.isc");
+  alert("System Massage: 执行：保存 edge.isc");
 }
 function edgeEdit(){
-  let longHtml = "html://edge\n".repeat(4000);
+  let longHtml = "System Massage: html://edge\n".repeat(4000);
   document.getElementById("edgeContent").innerText = longHtml;
 }
 function edgeHelp(){
-  let opt = prompt("1:语言学习页面 | 2:返回官网主页\n输入序号");
+  let opt = prompt("System Massage: 1:语言学习页面 | 2:返回官网主页\n输入序号");
   if(opt=="1"){
-    document.getElementById("edgeContent").innerText = "在这里学习各类编程语言";
+    document.getElementById("edgeContent").innerText = "System Massage: 在这里学习各类编程语言";
   }else if(opt=="2"){
     closeWin("winLang");
   }
@@ -239,13 +247,13 @@ function runCmd(e){
   if(e.key!="Enter") return;
   let input = document.getElementById("cmdIn").value.trim();
   let outBox = document.getElementById("cmdOut");
-  outBox.innerText += "\nC:\\Users\\DD>"+input;
+  outBox.innerText += "\nSystem Massage: C:\\Windows\\Wine\\System32\\Admin>"+input;
   //内置简易cmd指令
   switch(input.toLowerCase()){
-    case "cls": outBox.innerText = "C:\\Users\\DD>";break;
-    case "ver": outBox.innerText += "\nWindows 98 Sim Build 1998";break;
-    case "dir": outBox.innerText += "\nindex.html\tedge.isc\treadme.md";break;
-    default: outBox.innerText += `\n'${input}' 不是内部或外部命令`;
+    case "cls": outBox.innerText = "System Massage: C:\\Windows\\Wine\\System32\\Admin>";break;
+    case "ver": outBox.innerText += "\nSystem Massage: Windows 98 Sim Build 1998";break;
+    case "dir": outBox.innerText += "\nSystem Massage: index.html\tedge.isc\treadme.md";break;
+    default: outBox.innerText += `\nSystem Massage: '${input}' 不是内部或外部命令`;
   }
   document.getElementById("cmdIn").value="";
   outBox.scrollTop = outBox.scrollHeight;
