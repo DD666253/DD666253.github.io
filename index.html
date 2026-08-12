@@ -1,19 +1,118 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh‑CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>DD的个人主页</title>
+<meta charset="utf‑8">
+<meta name="viewport" content="width=device‑width,initial‑scale=1">
+<title>DD的个人官网</title>
 <style>
-body{font-family:sans-serif;background:#1a1a2e;color:#fff;
-display:flex;flex-direction:column;align-items:center;
-justify-content:center;height:100vh;margin:0}
-h1{font-size:48px;margin:0}
-p{color:#aaa;margin-top:10px}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Segoe UI}
+body{background:#151722;color:#ffffff;height:100vh;overflow:hidden}
+/* 主页面 */
+.main-page{padding:40px 20px}
+h1{font-size:46px;margin-bottom:12px}
+.desc{color:#94a3b8;margin-bottom:30px}
+.btn{
+  background:#0078d4;color:white;border:none;
+  padding:12px 22px;font-size:16px;border-radius:4px;
+  cursor:pointer;margin-right:10px;margin-bottom:10px;
+}
+.btn:hover{background:#218be0}
+
+/* Win98窗口样式 */
+.win98-window{
+  position:absolute;background:#c0c0c0;border:2px solid;
+  border-top-color:#ffffff;border-left-color:#ffffff;
+  border-right-color:#404040;border-bottom-color:#404040;
+  min-width:420px;min-height:320px;display:none;z-index:100;
+}
+.win98-titlebar{
+  background:#000080;color:white;padding:3px 6px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-weight:bold;font-size:14px;
+  user-select:none;
+}
+.win98-close{
+  background:#c0c0c0;color:black;border:1px solid;
+  border-top-color:#ffffff;border-left-color:#ffffff;
+  border-right-color:#404040;border-bottom-color:#404040;
+  width:18px;height:18px;cursor:pointer;text-align:center;line-height:16px;
+}
+.win98-body{padding:8px}
+textarea{
+  width:100%;height:220px;background:white;color:black;
+  border:2px solid;border-top:#404040;border-left:#404040;
+  border-right:#ffffff;border-bottom:#ffffff;padding:6px;
+  font-family:monospace;font-size:13px;resize:none;
+}
+.preview-box{
+  width:100%;height:220px;background:white;border:2px solid;
+  border-top:#404040;border-left:#404040;
+  border-right:#ffffff;border-bottom:#ffffff;
+  overflow:auto;
+}
 </style>
 </head>
 <body>
-<h1>DD666253</h1>
-<p>欢迎来到我的个人官网</p>
+<div class="main-page">
+  <h1>DD666253</h1>
+  <p class="desc">我的个人开发主页</p>
+  <button class="btn" onclick="openAllWindows()">打开HTML编辑套装</button>
+</div>
+
+<!-- Win98 编辑窗口 -->
+<div class="win98-window" id="winEditor" style="left:20px;top:100px;width:480px;height:340px">
+  <div class="win98-titlebar">
+    <span>HTML 编辑器</span>
+    <div class="win98-close" onclick="closeWin('winEditor')">×</div>
+  </div>
+  <div class="win98-body">
+    <textarea id="codeInput" placeholder="在这里编写HTML代码...">
+<!DOCTYPE html>
+<html>
+<head>
+<title>测试页面</title>
+</head>
+<body>
+<h2>测试内容</h2>
+<p>在这里修改代码</p>
+</body>
+</html>
+    </textarea>
+  </div>
+</div>
+
+<!-- Win98 预览窗口 -->
+<div class="win98-window" id="winPreview" style="left:540px;top:100px;width:480px;height:340px">
+  <div class="win98-titlebar">
+    <span>index.html View</span>
+    <div class="win98-close" onclick="closeWin('winPreview')">×</div>
+  </div>
+  <div class="win98-body">
+    <div class="preview-box" id="previewFrame"></div>
+  </div>
+</div>
+
+<script>
+// 一键同时打开两个窗口
+function openAllWindows(){
+  document.getElementById("winEditor").style.display="block";
+  document.getElementById("winPreview").style.display="block";
+  renderPreview();
+}
+function closeWin(id){
+  document.getElementById(id).style.display="none";
+}
+
+const codeInput=document.getElementById("codeInput");
+const previewFrame=document.getElementById("previewFrame");
+
+function renderPreview(){
+  const code=codeInput.value;
+  previewFrame.innerHTML=code;
+}
+//输入实时更新预览
+codeInput.addEventListener("input",renderPreview);
+</script>
+
 </body>
 </html>
