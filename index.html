@@ -68,6 +68,16 @@ textarea{
 }
 .edge-menubar span{cursor:pointer;padding:2px 6px}
 .edge-content{margin-top:8px;height:240px;border:inset 2px #666;padding:6px;overflow:auto}
+/* 模拟浏览器地址栏 */
+.browser-bar{
+  display:flex;gap:6px;margin-bottom:8px;
+}
+.browser-bar input{
+  flex:1;padding:4px;
+}
+.browser-view{
+  height:260px;border:inset 2px #666;background:#fff;overflow:auto;
+}
 </style>
 </head>
 <body>
@@ -78,13 +88,16 @@ textarea{
   <button class="btn" onclick="openStudySelect()">练习CMD & 编程语言学习</button>
 </div>
 
-<!-- 弹窗：选择CMD或者语言学习 -->
+<!-- 弹窗：选择功能 -->
 <div class="select-modal" id="selectPop">
   <div class="select-panel">
     <h3>请选择功能</h3>
     <br>
     <button class="btn" onclick="openCmdWin();closeSelect()">Win CMD模拟器</button>
     <button class="btn" onclick="openLangDesktop();closeSelect()">进入语言学习模拟桌面</button>
+    <button class="btn" onclick="openSspus();closeSelect()">远程(bug) sspus</button>
+    <button class="btn" onclick="openMcWin();closeSelect()">Minecraft</button>
+    <button class="btn" onclick="openSimBrowser();closeSelect()">在线浏览器</button>
     <button class="btn" onclick="closeSelect()">取消</button>
   </div>
 </div>
@@ -156,6 +169,47 @@ textarea{
   </div>
 </div>
 
+<!-- 远程sspus bug窗口 -->
+<div class="win98-window" id="winSspus" style="left:60px;top:90px;width:540px;height:320px">
+  <div class="win98-titlebar">
+    <span>远程(bug)‑sspus</span>
+    <div class="win98-close" onclick="closeWin('winSspus')">×</div>
+  </div>
+  <div class="win98-body">
+    <div class="cmd-box" id="sspusOut">System Massage: sspus remote bug 模块已加载</div>
+  </div>
+</div>
+
+<!-- Minecraft网页窗口 -->
+<div class="win98-window" id="winMc" style="left:80px;top:110px;width:580px;height:360px">
+  <div class="win98-titlebar">
+    <span>Minecraft‑minecraft.net</span>
+    <div class="win98-close" onclick="closeWin('winMc')">×</div>
+  </div>
+  <div class="win98-body">
+    <div class="browser-view" id="mcView">
+模拟窗口：目标地址 https://minecraft.net<br>
+浏览器跨域限制，不能直接加载外部网站内容。
+</div>
+  </div>
+</div>
+
+<!-- 在线模拟浏览器窗口 -->
+<div class="win98-window" id="winSimBrowser" style="left:120px;top:100px;width:620px;height:400px">
+  <div class="win98-titlebar">
+    <span>在线浏览器</span>
+    <div class="win98-close" onclick="closeWin('winSimBrowser')">×</div>
+  </div>
+  <div class="win98-body">
+    <div class="browser-bar">
+      <input id="browserUrl" placeholder="输入网页地址">
+      <button class="btn" onclick="browserGo()">前往</button>
+      <button class="btn" onclick="browserRefresh()">刷新</button>
+    </div>
+    <div class="browser-view" id="browserView">模拟浏览器页面区域</div>
+  </div>
+</div>
+
 <script>
 // 全局变量
 let isCn = false;
@@ -179,6 +233,18 @@ function closeSelect(){
 // CMD窗口开启
 function openCmdWin(){
   document.getElementById("winCmd").style.display="block";
+}
+//打开sspus远程bug窗口
+function openSspus(){
+  document.getElementById("winSspus").style.display="block";
+}
+//打开Minecraft窗口
+function openMcWin(){
+  document.getElementById("winMc").style.display="block";
+}
+//打开模拟在线浏览器
+function openSimBrowser(){
+  document.getElementById("winSimBrowser").style.display="block";
 }
 //语言桌面初始化，自动检测浏览器系统语言
 function openLangDesktop(){
@@ -244,12 +310,10 @@ function runCmd(e){
   switch(input.toLowerCase()){
     case "cls": outBox.innerText = "System Massage: C:\\Windows\\Wine\\System32\\Admin>";break;
     case "ver": outBox.innerText += "\nSystem Massage: Windows 98 Sim Build 1998";break;
-    case "dir": outBox.innerText += "\nSystem Massage: index.html\tedge.isc\treadme.md";break;
-    default: outBox.innerText += `\nSystem Massage: '${input}' 不是内部或外部命令`;
-  }
-  document.getElementById("cmdIn").value="";
-  outBox.scrollTop = outBox.scrollHeight;
-}
-</script>
-</body>
-</html>
+ let url = document.getElementById("browserUrl").value.trim();
+   let view = document.getElementById("browserView");
+   view.innerText = `刷新页面：${url}\n模拟刷新完成`;
+ }
+ </script>
+ </body>
+ </html>
