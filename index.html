@@ -1,296 +1,324 @@
 <!DOCTYPE html>
-<html lang="zh‑CN">
+<html lang="zh-CN">
 <head>
-<title>DD的个人官网</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>DD Game Hub</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Segoe UI}
-body{background:#151722;color:#ffffff;height:100vh;overflow:hidden}
-.main-page{padding:40px 20px}
-h1{font-size:46px;margin-bottom:12px}
-.desc{color:#94a3b8;margin-bottom:30px}
-.btn{
-  background:#0078d4;color:white;border:none;
-  padding:12px 22px;font-size:16px;border-radius:4px;
-  cursor:pointer;margin-right:10px;margin-bottom:10px;
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui}
+body{overflow:hidden;transition:background 0.3s,color 0.3s}
+body.light{background:#f8f8f8;color:#111}
+body.dark{background:#121212;color:#eee}
+
+/* 主页面 */
+#mainPage{position:fixed;inset:0;display:block}
+#viewWrap{width:100vw;height:100vh;overflow:hidden;touch-action:none}
+#scene{
+  position:absolute;
+  width:120vw;height:120vh;
+  left:-10vw;top:-10vh;
+  background:linear-gradient(#27293d,#141520);
+  transition: transform 0.24s cubic-bezier(0.17, 0.67, 0.25, 1);
 }
-.btn:hover{background:#218be0}
-.win98-window{
-  position:absolute;background:#c0c0c0;border:2px solid;
-  border-top-color:#ffffff;border-left-color:#ffffff;
-  border-right-color:#404040;border-bottom-color:#404040;
-  min-width:420px;min-height:320px;display:none;z-index:100;color:#000
+.villaBg{
+  position:absolute;
+  width:420px;height:320px;
+  left:50%;top:40%;
+  transform:translate(-50%,-50%);
+  background:#3a3c52;
+  border:4px solid #222;
+  border-radius:8px;
 }
-.win98-titlebar{
-  background:#000080;color:white;padding:3px 6px;
-  display:flex;justify-content:space-between;align-items:center;
-  font-weight:bold;font-size:14px;user-select:none;
+.monsterSprite{
+  position:absolute;
+  width:110px;height:160px;
+  right:12%;top:35%;
+  background:#0a0a0a;
+  border-radius:6px;
 }
-.win98-close{
-  background:#c0c0c0;color:black;border:1px solid;
-  border-top-color:#ffffff;border-left-color:#ffffff;
-  border-right-color:#404040;border-bottom:#404040;
-  width:18px;height:18px;cursor:pointer;text-align:center;line-height:16px;
+
+#menuUi{position:absolute;inset:0;pointer-events:none}
+#menuUi > *{pointer-events:auto}
+.topBar{position:absolute;top:14px;right:14px}
+.topLeftBar{position:absolute;top:14px;left:14px;display:flex;gap:6px;flex-wrap:wrap;max-width:75vw}
+.btn{padding:9px 16px;margin:4px;border:none;border-radius:6px;font-size:14px}
+.btnBlue{background:#2563eb;color:#fff}
+.btnGray{background:#444654;color:#fff}
+.mainButtons{
+  position:absolute;
+  left:8%;top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:14px;
 }
+
+/* 设置弹窗 */
+#settingModal{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.65);
+  display:none;align-items:center;justify-content:center;
+  z-index:900;
+}
+.setBox{background:#e8e8e8;padding:22px;border-radius:10px}
+body.dark .setBox{background:#282828}
+
+/* win98窗口样式 */
+.win98-window{position:absolute;border:2px solid #000;background:#c0c0c0;color:#000;min-width:280px;min-height:200px;overflow:hidden;z-index:50}
+.win98-title{background:#000080;color:#fff;padding:4px 8px;display:flex;justify-content:space-between;align-items:center}
 .win98-body{padding:8px;color:#000}
-textarea{
-  width:100%;height:220px;background:white;color:black;
-  border:2px solid;border-top:#404040;border-left:#404040;
-  border-right:#ffffff;border-bottom:#ffffff;padding:6px;
-  font-family:monospace;font-size:13px;
+
+/* 游戏层 别墅里面的怪物 */
+#gameLayer{
+  position:fixed;inset:0;
+  background:#0b0b10;
+  display:none;
+  z-index:100;
 }
-.preview-box{
-  width:100%;height:220px;background:white;border:2px solid;
-  border-top:#404040;border-left:#404040;
-  border-right:#ffffff;border-bottom:#ffffff;overflow:auto;
+/* 虚拟摇杆 */
+#joystickWrap{
+  position:absolute;left:26px;bottom:26px;
+  width:120px;height:120px;
+  background:rgba(255,255,255,0.12);
+  border-radius:50%;
 }
-.cmd-box{
-  background:#000;color:#0f0;height:260px;padding:8px;
-  font-family:Consolas,monospace;overflow-y:auto;white-space:pre-wrap;
+#joystickKnob{
+  width:50px;height:50px;
+  background:rgba(255,255,255,0.35);
+  border-radius:50%;
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
 }
-.cmd-input{width:100%;margin-top:6px;padding:4px}
-.select-modal{
-  position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);
-  display:none;align-items:center;justify-content:center;z-index:200;
+#sprintBtn{
+  position:absolute;right:26px;bottom:26px;
+  width:90px;height:90px;
+  border-radius:50%;
+  background:rgba(220,30,30,0.45);
+  color:white;border:none;font-size:14px;
 }
-.select-panel{
-  background:#c0c0c0;border:2px outset #fff;padding:20px;
+
+/* 游戏内物体 */
+#inGameVilla{
+  position:absolute;left:50%;top:40%;
+  width:360px;height:280px;
+  background:#222436;
+  transform:translate(-50%,-50%);
 }
-.edge-menubar{
-  display:flex;gap:20px;padding:4px 8px;background:#ddd;border-bottom:2px inset #666;
+#bedObj{
+  position:absolute;left:54%;top:62%;
+  width:110px;height:70px;
+  background:#444;
 }
-.edge-menubar span{cursor:pointer;padding:2px 6px}
-.edge-content{margin-top:8px;height:240px;border:inset 2px #666;padding:6px;overflow:auto}
-.browser-bar{
-  display:flex;gap:6px;margin-bottom:8px;
+#jumpScareMonster{
+  position:fixed;inset:0;background:#000;
+  display:none;z-index:200;
 }
-.browser-bar input{
-  flex:1;padding:4px;
-}
-.browser-view{
-  height:260px;border:inset 2px #666;background:#fff;overflow:auto;
+#victoryBox{
+  position:fixed;inset:0;background:rgba(0,0,0,0.85);
+  color:white;display:none;
+  z-index:210;
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:16px;
 }
 </style>
 </head>
-<body>
-<div class="main-page">
-  <h1>DD666253</h1>
-  <p class="desc">我的个人开发主页</p>
-  <button class="btn" onclick="openAllWindows()">打开HTML编辑套装</button>
-  <button class="btn" onclick="openStudySelect()">练习CMD & 编程语言学习</button>
-</div>
-
-<div class="select-modal" id="selectPop">
-  <div class="select-panel">
-    <h3>请选择功能</h3>
-    <br>
-    <button class="btn" onclick="openCmdWin();closeSelect()">Win CMD模拟器</button>
-    <button class="btn" onclick="openLangDesktop();closeSelect()">进入语言学习模拟桌面</button>
-    <button class="btn" onclick="openSspus();closeSelect()">远程(bug) sspus</button>
-    <button class="btn" onclick="openMcWin();closeSelect()">Minecraft</button>
-    <button class="btn" onclick="openSimBrowser();closeSelect()">在线浏览器</button>
-    <button class="btn" onclick="closeSelect()">取消</button>
-  </div>
-</div>
-
-<div class="win98-window" id="winEditor" style="left:20px;top:100px;width:480px;height:340px">
-  <div class="win98-titlebar">
-    <span>HTML 编辑器</span>
-    <div class="win98-close" onclick="closeWin('winEditor')">×</div>
-  </div>
-  <div class="win98-body">
-    <textarea id="codeInput" placeholder="在这里编写HTML代码...">
-<!DOCTYPE html>
-<html>
-<head>
-<title>测试页面</title>
-</head>
-<body>
-<h2>测试内容</h2>
-<p>在这里修改代码</p>
-</body>
-</html>
-    </textarea>
-  </div>
-</div>
-
-<div class="win98-window" id="winPreview" style="left:540px;top:100px;width:480px;height:340px">
-  <div class="win98-titlebar">
-    <span>index.html View</span>
-    <div class="win98-close" onclick="closeWin('winPreview')">×</div>
-  </div>
-  <div class="win98-body">
-    <div class="preview-box" id="previewFrame"></div>
-  </div>
-</div>
-
-<div class="win98-window" id="winCmd" style="left:30px;top:120px;width:520px;height:360px">
-  <div class="win98-titlebar">
-    <span>Windows CMD</span>
-    <div class="win98-close" onclick="closeWin('winCmd')">×</div>
-  </div>
-  <div class="win98-body">
-    <div class="cmd-box" id="cmdOut">System Massage: C:\Windows\Wine\System32\Admin></div>
-    <input class="cmd-input" id="cmdIn" placeholder="输入命令回车执行" onkeydown="runCmd(event)">
-  </div>
-</div>
-
-<div class="win98-window" id="winLang" style="left:100px;top:80px;width:650px;height:420px">
-  <div class="win98-titlebar">
-    <span id="langWinTitle">Language Study Desktop</span>
-  </div>
-  <div class="win98-body">
-    <p id="langTip">Default Language: English</p>
-    <button class="btn" onclick="switchLang()">切换中英文</button>
-    <button class="btn" onclick="openEdge()">打开MicroSimu Edge</button>
-    <div id="edgeBox" style="display:none;margin-top:10px;border:outset 2px #aaa">
-      <div class="edge-menubar">
-        <span onclick="edgeSave()">文件</span>
-        <span onclick="edgeEdit()">编辑</span>
-        <span onclick="edgeHelp()">寻求帮助</span>
+<body class="dark">
+<div id="mainPage">
+  <div id="viewWrap">
+    <div id="scene">
+      <div class="villaBg"></div>
+      <div class="monsterSprite"></div>
+    </div>
+    <div id="menuUi">
+      <!--左上角：编辑器、CMD按钮 -->
+      <div class="topLeftBar">
+        <button class="btn btnBlue" onclick="openEditorViewer()">HTML编辑套装</button>
+        <button class="btn btnGray" onclick="openSelectMenu()">练习cmd & 学习语言</button>
       </div>
-      <div class="edge-content" id="edgeContent"></div>
+      <div class="topBar">
+        <button class="btn btnGray" onclick="openSettings()">设置</button>
+      </div>
+      <div class="mainButtons">
+        <button class="btn btnBlue" onclick="startOfflineGame()">开始游玩别墅里的怪物 Offline</button>
+        <button class="btn btnBlue">PLAY</button>
+        <button class="btn btnGray">STORE</button>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="win98-window" id="winSspus" style="left:60px;top:90px;width:540px;height:320px">
-  <div class="win98-titlebar">
-    <span>远程(bug)‑sspus</span>
-    <div class="win98-close" onclick="closeWin('winSspus')">×</div>
-  </div>
-  <div class="win98-body">
-    <div class="cmd-box" id="sspusOut">System Massage: sspus remote bug 模块已加载</div>
-  </div>
-</div>
-
-<div class="win98-window" id="winMc" style="left:80px;top:110px;width:580px;height:360px">
-  <div class="win98-titlebar">
-    <span>Minecraft‑minecraft.net</span>
-    <div class="win98-close" onclick="closeWin('winMc')">×</div>
-  </div>
-  <div class="win98-body">
-    <div class="browser-view" id="mcView">
-模拟窗口：目标地址 https://minecraft.net<br>
-浏览器跨域限制，不能直接加载外部网站内容。
-</div>
+<!-- 设置弹窗 -->
+<div id="settingModal">
+  <div class="setBox">
+    <h3>主题设置</h3>
+    <br>
+    <button class="btn btnBlue" onclick="setLight()">白色模式</button>
+    <button class="btn btnGray" onclick="setDark()">深色模式</button>
+    <br><br>
+    <button class="btn" onclick="closeSettings()">关闭</button>
   </div>
 </div>
 
-<div class="win98-window" id="winSimBrowser" style="left:120px;top:100px;width:620px;height:400px">
-  <div class="win98-titlebar">
-    <span>在线浏览器</span>
-    <div class="win98-close" onclick="closeWin('winSimBrowser')">×</div>
+<!--弹窗容器 -->
+<div id="modalMask" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:9999">
+<div id="modalBox" style="background:#c0c0c0;border:2px solid #000;padding:16px;min-width:300px"></div>
+</div>
+
+<!-- 游戏层：别墅里面的怪物 -->
+<div id="gameLayer">
+  <div id="inGameVilla"></div>
+  <div id="bedObj"></div>
+
+  <!-- 摇杆 -->
+  <div id="joystickWrap">
+    <div id="joystickKnob"></div>
   </div>
-  <div class="win98-body">
-    <div class="browser-bar">
-      <input id="browserUrl" placeholder="输入网页地址">
-      <button class="btn" onclick="browserGo()">前往</button>
-      <button class="btn" onclick="browserRefresh()">刷新</button>
-    </div>
-    <div class="browser-view" id="browserView">模拟浏览器页面区域</div>
+  <button id="sprintBtn">疾跑</button>
+
+  <!-- 突脸怪物 -->
+  <div id="jumpScareMonster"></div>
+
+  <!-- 通关弹窗 -->
+  <div id="victoryBox">
+    <h2>游戏成功</h2>
+    <button class="btn btnBlue" onclick="backToMenu()">继续</button>
   </div>
 </div>
 
 <script>
-let isCn = false;
-function openAllWindows(){
-  document.getElementById("winEditor").style.display="block";
-  document.getElementById("winPreview").style.display="block";
-  renderPreview();
+// ========== 拖拽弹簧回弹主页面视角 ==========
+const scene = document.getElementById("scene");
+let dragStartX=0,dragStartY=0;
+let offsetX=0,offsetY=0;
+let isDrag=false;
+
+document.getElementById("viewWrap").addEventListener("touchstart",e=>{
+  const t = e.touches[0];
+  dragStartX = t.clientX - offsetX;
+  dragStartY = t.clientY - offsetY;
+  isDrag=true;
+  scene.style.transition="none";
+})
+document.getElementById("viewWrap").addEventListener("touchmove",e=>{
+  if(!isDrag) return;
+  const t = e.touches[0];
+  offsetX = t.clientX - dragStartX;
+  offsetY = t.clientY - dragStartY;
+  scene.style.transform=`translate(${offsetX}px,${offsetY}px)`;
+})
+document.getElementById("viewWrap").addEventListener("touchend",()=>{
+  isDrag=false;
+  //弹簧回弹回到原点
+  offsetX=0;offsetY=0;
+  scene.style.transition="transform 0.24s cubic-bezier(0.17, 0.67, 0.25, 1)";
+  scene.style.transform="translate(0px,0px)";
+})
+
+// ========== 设置 深色浅色 ==========
+function openSettings(){
+  document.getElementById("settingModal").style.display="flex";
 }
-function closeWin(id){
-  document.getElementById(id).style.display="none";
+function closeSettings(){
+  document.getElementById("settingModal").style.display="none";
 }
-function openStudySelect(){
-  document.getElementById("selectPop").style.display="flex";
+function setLight(){
+  document.body.className="light";
 }
-function closeSelect(){
-  document.getElementById("selectPop").style.display="none";
-}
-function openCmdWin(){
-  document.getElementById("winCmd").style.display="block";
-}
-function openSspus(){
-  document.getElementById("winSspus").style.display="block";
-}
-function openMcWin(){
-  document.getElementById("winMc").style.display="block";
-}
-function openSimBrowser(){
-  document.getElementById("winSimBrowser").style.display="block";
-}
-function openLangDesktop(){
-  let sysLang = navigator.language || navigator.userLanguage;
-  isCn = sysLang.startsWith("zh");
-  refreshLangUI();
-  document.getElementById("winLang").style.display="block";
-}
-function switchLang(){
-  isCn = !isCn;
-  refreshLangUI();
-}
-function refreshLangUI(){
-  let titleDom = document.getElementById("langWinTitle");
-  let tipDom = document.getElementById("langTip");
-  if(isCn){
-    titleDom.innerText = "编程语言学习桌面";
-    tipDom.innerText = "当前语言：中文";
-  }else{
-    titleDom.innerText = "Language Study Desktop";
-    tipDom.innerText = "Current Language: English";
-  }
-}
-function openEdge(){
-  document.getElementById("edgeBox").style.display="block";
-  document.getElementById("edgeContent").innerText = "Edge模拟器加载完成";
-}
-function edgeSave(){
-  alert("执行：保存 edge.isc");
-}
-function edgeEdit(){
-  let longHtml = "html://edge\n".repeat(4000);
-  document.getElementById("edgeContent").innerText = longHtml;
-}
-function edgeHelp(){
-  let opt = prompt("1:语言学习页面 | 2:返回官网主页\n输入序号");
-  if(opt=="1"){
-    document.getElementById("edgeContent").innerText = "在这里学习各类编程语言";
-  }else if(opt=="2"){
-    closeWin("winLang");
-  }
+function setDark(){
+  document.body.className="dark";
 }
 
-const codeInput=document.getElementById("codeInput");
-const previewFrame=document.getElementById("previewFrame");
+// ========== Win98窗口工具集 ==========
+let winEditor=null,winPreview=null;
+const mask=document.getElementById("modalMask");
+const mbox=document.getElementById("modalBox");
+
+function closeModal(){mask.style.display="none"}
+
+function createWin98Window(title,html){
+    const div=document.createElement("div");
+    div.className="win98-window";
+    div.style.left="20px";div.style.top="120px";div.style.width="340px";div.style.height="300px";
+    div.innerHTML=`
+    <div class="win98-title">${title}<span onclick="this.parentElement.parentElement.remove()">X</span></div>
+    <div class="win98-body">${html}</div>
+    `;
+    document.body.appendChild(div);
+    return div;
+}
+
+function openEditorViewer(){
+    if(!winEditor){
+        winEditor=createWin98Window("编辑器","<textarea style='width:100%;height:220px' id='codeInput'><h1>zk</h1></textarea><br><button onclick='renderPreview()'>刷新预览</button>");
+    }
+    if(!winPreview){
+        winPreview=createWin98Window("index.html View","<div id='previewOut'></div>");
+    }
+}
 function renderPreview(){
-  const code=codeInput.value;
-  previewFrame.innerHTML=code;
+    const code=document.getElementById("codeInput").value||"";
+    document.getElementById("previewOut").innerHTML=code;
 }
 
-function runCmd(e){
-  if(e.key!="Enter") return;
-  let input = document.getElementById("cmdIn").value.trim();
-  let outBox = document.getElementById("cmdOut");
-  outBox.innerText += "\nSystem Massage: C:\\Windows\\Wine\\System32\\Admin>"+input;
-  switch(input.toLowerCase()){
-    case "cls": outBox.innerText = "System Massage: C:\\Windows\\Wine\\System32\\Admin>";break;
-    case "ver": outBox.innerText += "\nSystem Massage: Windows 98 Sim Build 1998";break;
-    case "dir": outBox.innerText += "\nSystem Massage: index.html\tedge.isc\treadme.md";break;
-    default: outBox.innerText += `\nSystem Massage: '${input}' 不是内部或外部命令`;
+function openSelectMenu(){
+    mbox.innerHTML=`
+    <h3>请选择</h3>
+    <button onclick="openCmd()">cmd</button>
+    <button onclick="openLearnDesktop()">学习语言</button>
+    <br><br>
+    <button onclick="closeModal()">取消</button>
+    `;
+    mask.style.display="flex";
+}
+
+function openCmd(){
+    closeModal();
+    createWin98Window("WinCMD",`
+    <div style="font-family:monospace;background:#000;color:#0f0;padding:6px;height:220px;overflow:auto" id="cmdCon">
+System Massage: C:/Windows/Wine/System32/Admin>
+    </div>
+    <input id="cmdIn" style="width:100%" placeholder="输入命令">
+    `);
+}
+function openLearnDesktop(){
+    closeModal();
+    createWin98Window("学习语言桌面","<p>MicroSimu Edge</p><button>文件</button> <button>编辑</button> <button>寻求帮助</button>");
+}
+
+// ========== 进入游戏：只有点击这个按钮才全屏+横屏 ==========
+async function startOfflineGame(){
+  //浏览器限制：必须点击触发全屏横屏
+  try{
+    await document.documentElement.requestFullscreen();
+  }catch(e){}
+  if(screen.orientation?.lock){
+    try{
+      await screen.orientation.lock("landscape");
+    }catch(e){}
   }
-  document.getElementById("cmdIn").value="";
-  outBox.scrollTop = outBox.scrollHeight;
+  document.getElementById("mainPage").style.display="none";
+  document.getElementById("gameLayer").style.display="block";
+
+  //模拟：进入别墅，怪物突脸
+  setTimeout(()=>{
+    const scare=document.getElementById("jumpScareMonster");
+    scare.style.display="block";
+    setTimeout(()=>{
+      scare.style.display="none";
+      //走到床触发通关
+      setTimeout(()=>{
+        document.getElementById("victoryBox").style.display="flex";
+      },1200);
+    },700);
+  },1200);
 }
 
-function browserGo(){
-  let url = document.getElementById("browserUrl").value.trim();
-  let view = document.getElementById("browserView");
-  view.innerText = `模拟访问地址：${url}\n出于浏览器跨域安全限制，不能直接加载外部真实网站。`;
-}
-function browserRefresh(){
-  let url = document.getElementById("browserUrl").value.trim();
-  let view = document.getElementById("browserView");
-  view.innerText = `刷新页面：${url}\n模拟刷新完成`;
+// 返回主菜单，退出全屏解锁屏幕方向
+async function backToMenu(){
+  if(document.exitFullscreen) document.exitFullscreen();
+  if(screen.orientation?.unlock) screen.orientation.unlock();
+  document.getElementById("gameLayer").style.display="none";
+  document.getElementById("victoryBox").style.display="none";
+  document.getElementById("jumpScareMonster").style.display="none";
+  document.getElementById("mainPage").style.display="block";
 }
 </script>
 </body>
