@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html lang="zh‑CN">
 <head>
-<meta charset="utf‑8">
-<meta name="viewport" content="width=device‑width,initial‑scale=1">
 <title>DD的个人官网</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Segoe UI}
 body{background:#151722;color:#ffffff;height:100vh;overflow:hidden}
-/* 主页面 */
 .main-page{padding:40px 20px}
 h1{font-size:46px;margin-bottom:12px}
 .desc{color:#94a3b8;margin-bottom:30px}
@@ -17,8 +14,6 @@ h1{font-size:46px;margin-bottom:12px}
   cursor:pointer;margin-right:10px;margin-bottom:10px;
 }
 .btn:hover{background:#218be0}
-
-/* Win98窗口通用样式 */
 .win98-window{
   position:absolute;background:#c0c0c0;border:2px solid;
   border-top-color:#ffffff;border-left-color:#ffffff;
@@ -41,20 +36,18 @@ textarea{
   width:100%;height:220px;background:white;color:black;
   border:2px solid;border-top:#404040;border-left:#404040;
   border-right:#ffffff;border-bottom:#ffffff;padding:6px;
-  font-family:monospace;font-size:13px;resize:none;
+  font-family:monospace;font-size:13px;
 }
 .preview-box{
   width:100%;height:220px;background:white;border:2px solid;
   border-top:#404040;border-left:#404040;
   border-right:#ffffff;border-bottom:#ffffff;overflow:auto;
 }
-/* CMD窗口样式 */
 .cmd-box{
   background:#000;color:#0f0;height:260px;padding:8px;
   font-family:Consolas,monospace;overflow-y:auto;white-space:pre-wrap;
 }
 .cmd-input{width:100%;margin-top:6px;padding:4px}
-/* 弹窗选择面板 */
 .select-modal{
   position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);
   display:none;align-items:center;justify-content:center;z-index:200;
@@ -62,13 +55,11 @@ textarea{
 .select-panel{
   background:#c0c0c0;border:2px outset #fff;padding:20px;
 }
-/* Edge模拟浏览器顶部菜单栏 */
 .edge-menubar{
   display:flex;gap:20px;padding:4px 8px;background:#ddd;border-bottom:2px inset #666;
 }
 .edge-menubar span{cursor:pointer;padding:2px 6px}
 .edge-content{margin-top:8px;height:240px;border:inset 2px #666;padding:6px;overflow:auto}
-/* 模拟浏览器地址栏 */
 .browser-bar{
   display:flex;gap:6px;margin-bottom:8px;
 }
@@ -88,7 +79,6 @@ textarea{
   <button class="btn" onclick="openStudySelect()">练习CMD & 编程语言学习</button>
 </div>
 
-<!-- 弹窗：选择功能 -->
 <div class="select-modal" id="selectPop">
   <div class="select-panel">
     <h3>请选择功能</h3>
@@ -102,7 +92,6 @@ textarea{
   </div>
 </div>
 
-<!-- HTML编辑器窗口 -->
 <div class="win98-window" id="winEditor" style="left:20px;top:100px;width:480px;height:340px">
   <div class="win98-titlebar">
     <span>HTML 编辑器</span>
@@ -124,7 +113,6 @@ textarea{
   </div>
 </div>
 
-<!-- HTML预览窗口 -->
 <div class="win98-window" id="winPreview" style="left:540px;top:100px;width:480px;height:340px">
   <div class="win98-titlebar">
     <span>index.html View</span>
@@ -135,7 +123,6 @@ textarea{
   </div>
 </div>
 
-<!-- Win CMD模拟窗口 -->
 <div class="win98-window" id="winCmd" style="left:30px;top:120px;width:520px;height:360px">
   <div class="win98-titlebar">
     <span>Windows CMD</span>
@@ -147,17 +134,14 @@ textarea{
   </div>
 </div>
 
-<!-- 语言学习桌面+MicroSimu Edge浏览器 -->
 <div class="win98-window" id="winLang" style="left:100px;top:80px;width:650px;height:420px">
   <div class="win98-titlebar">
     <span id="langWinTitle">Language Study Desktop</span>
-    <div class="win98-close" onclick="closeWin('winLang')">×</div>
   </div>
   <div class="win98-body">
     <p id="langTip">Default Language: English</p>
     <button class="btn" onclick="switchLang()">切换中英文</button>
     <button class="btn" onclick="openEdge()">打开MicroSimu Edge</button>
-    <!-- Edge浏览器面板 -->
     <div id="edgeBox" style="display:none;margin-top:10px;border:outset 2px #aaa">
       <div class="edge-menubar">
         <span onclick="edgeSave()">文件</span>
@@ -169,7 +153,6 @@ textarea{
   </div>
 </div>
 
-<!-- 远程sspus bug窗口 -->
 <div class="win98-window" id="winSspus" style="left:60px;top:90px;width:540px;height:320px">
   <div class="win98-titlebar">
     <span>远程(bug)‑sspus</span>
@@ -180,7 +163,6 @@ textarea{
   </div>
 </div>
 
-<!-- Minecraft网页窗口 -->
 <div class="win98-window" id="winMc" style="left:80px;top:110px;width:580px;height:360px">
   <div class="win98-titlebar">
     <span>Minecraft‑minecraft.net</span>
@@ -194,7 +176,6 @@ textarea{
   </div>
 </div>
 
-<!-- 在线模拟浏览器窗口 -->
 <div class="win98-window" id="winSimBrowser" style="left:120px;top:100px;width:620px;height:400px">
   <div class="win98-titlebar">
     <span>在线浏览器</span>
@@ -211,49 +192,39 @@ textarea{
 </div>
 
 <script>
-// 全局变量
 let isCn = false;
-// 一键打开编辑器+预览双窗口
 function openAllWindows(){
   document.getElementById("winEditor").style.display="block";
   document.getElementById("winPreview").style.display="block";
   renderPreview();
 }
-//关闭任意窗口
 function closeWin(id){
   document.getElementById(id).style.display="none";
 }
-// 选择弹窗开关
 function openStudySelect(){
   document.getElementById("selectPop").style.display="flex";
 }
 function closeSelect(){
   document.getElementById("selectPop").style.display="none";
 }
-// CMD窗口开启
 function openCmdWin(){
   document.getElementById("winCmd").style.display="block";
 }
-//打开sspus远程bug窗口
 function openSspus(){
   document.getElementById("winSspus").style.display="block";
 }
-//打开Minecraft窗口
 function openMcWin(){
   document.getElementById("winMc").style.display="block";
 }
-//打开模拟在线浏览器
 function openSimBrowser(){
   document.getElementById("winSimBrowser").style.display="block";
 }
-//语言桌面初始化，自动检测浏览器系统语言
 function openLangDesktop(){
   let sysLang = navigator.language || navigator.userLanguage;
   isCn = sysLang.startsWith("zh");
   refreshLangUI();
   document.getElementById("winLang").style.display="block";
 }
-//语言切换按钮
 function switchLang(){
   isCn = !isCn;
   refreshLangUI();
@@ -269,12 +240,10 @@ function refreshLangUI(){
     tipDom.innerText = "Current Language: English";
   }
 }
-//唤起模拟Edge浏览器
 function openEdge(){
   document.getElementById("edgeBox").style.display="block";
   document.getElementById("edgeContent").innerText = "Edge模拟器加载完成";
 }
-//edge菜单栏功能
 function edgeSave(){
   alert("执行：保存 edge.isc");
 }
@@ -291,29 +260,38 @@ function edgeHelp(){
   }
 }
 
-//代码编辑器实时预览
 const codeInput=document.getElementById("codeInput");
 const previewFrame=document.getElementById("previewFrame");
 function renderPreview(){
   const code=codeInput.value;
   previewFrame.innerHTML=code;
 }
-codeInput.addEventListener("input",renderPreview);
 
-//简易CMD模拟命令：仅CMD内保留System Massage前缀
 function runCmd(e){
   if(e.key!="Enter") return;
   let input = document.getElementById("cmdIn").value.trim();
   let outBox = document.getElementById("cmdOut");
   outBox.innerText += "\nSystem Massage: C:\\Windows\\Wine\\System32\\Admin>"+input;
-  //内置简易cmd指令
   switch(input.toLowerCase()){
     case "cls": outBox.innerText = "System Massage: C:\\Windows\\Wine\\System32\\Admin>";break;
     case "ver": outBox.innerText += "\nSystem Massage: Windows 98 Sim Build 1998";break;
- let url = document.getElementById("browserUrl").value.trim();
-   let view = document.getElementById("browserView");
-   view.innerText = `刷新页面：${url}\n模拟刷新完成`;
- }
- </script>
- </body>
- </html>
+    case "dir": outBox.innerText += "\nSystem Massage: index.html\tedge.isc\treadme.md";break;
+    default: outBox.innerText += `\nSystem Massage: '${input}' 不是内部或外部命令`;
+  }
+  document.getElementById("cmdIn").value="";
+  outBox.scrollTop = outBox.scrollHeight;
+}
+
+function browserGo(){
+  let url = document.getElementById("browserUrl").value.trim();
+  let view = document.getElementById("browserView");
+  view.innerText = `模拟访问地址：${url}\n出于浏览器跨域安全限制，不能直接加载外部真实网站。`;
+}
+function browserRefresh(){
+  let url = document.getElementById("browserUrl").value.trim();
+  let view = document.getElementById("browserView");
+  view.innerText = `刷新页面：${url}\n模拟刷新完成`;
+}
+</script>
+</body>
+</html>
