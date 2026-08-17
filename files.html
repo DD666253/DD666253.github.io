@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh‑CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>termux free code</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, sans‑serif;
+        }
+        body {
+            background:#1e1e2e;
+            color:#eee;
+            padding:20px;
+        }
+        .container {
+            max-width:600px;
+            margin:0 auto;
+        }
+        h1 {
+            margin-bottom:24px;
+            font-size:22px;
+            color:#89b4fa;
+        }
+        .folder-item {
+            background:#313244;
+            padding:14px 16px;
+            border-radius:8px;
+            margin-bottom:10px;
+            cursor:pointer;
+            transition: 0.2s;
+        }
+        .folder-item:hover {
+            background:#45475a;
+        }
+        .child-wrap{
+            display:none;
+            margin-left:24px;
+        }
+        .file-item {
+            background:#2e3040;
+            padding:12px 14px;
+            border-radius:6px;
+            margin:8px 0;
+            cursor:pointer;
+        }
+        .file-item:hover {
+            background:#3b3d54;
+        }
+        .modal-mask {
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.65);
+            display:none;
+            align-items:center;
+            justify-content:center;
+            z-index:999;
+        }
+        .modal-box {
+            background:#181825;
+            border:1px solid #585b70;
+            border-radius:10px;
+            width:90%;
+            max-width:420px;
+            padding:20px;
+        }
+        .modal-box h3 {
+            margin-bottom:12px;
+            color:#f38ba8;
+        }
+        .modal-box pre {
+            background:#11111b;
+            padding:10px;
+            border-radius:6px;
+            white-space:pre-wrap;
+            color:#a6e3a1;
+            overflow-x:auto;
+        }
+        .btn-close {
+            margin-top:14px;
+            padding:8px 16px;
+            border:none;
+            border-radius:6px;
+            background:#89b4fa;
+            color:#000;
+            cursor:pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>termux free code</h1>
+
+    <div class="folder-item" id="folderRoot">
+        📁 root
+    </div>
+
+    <div class="folder-item" id="folderServer">
+        📁 Server
+        <div class="child-wrap" id="childServer">
+            <div class="file-item" id="fileServerHelp">
+                📄 help.txt
+            </div>
+        </div>
+    </div>
+
+    <div class="folder-item" id="folderZshBash">
+        📁 Termux Zsh+Bash Code
+        <div class="child-wrap" id="childZshBash">
+            <div class="file-item" id="fileInstallHelp">
+                📄 install help.txt
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!--root无权限弹窗-->
+<div class="modal-mask" id="modalNoPermission">
+    <div class="modal-box">
+        <h3>⚠️ 访问被拒绝</h3>
+        <p>无权限访问 root 目录</p>
+        <button class="btn-close" onclick="closeModal('modalNoPermission')">关闭</button>
+    </div>
+</div>
+
+<!--install help.txt弹窗-->
+<div class="modal-mask" id="modalHelpTxt">
+    <div class="modal-box">
+        <h3>install help.txt</h3>
+<pre>文件应答:
+pkg install [需要资源]</pre>
+        <button class="btn-close" onclick="closeModal('modalHelpTxt')">关闭</button>
+    </div>
+</div>
+
+<!--盗版/分站提示弹窗-->
+<div class="modal-mask" id="modalPiracy">
+    <div class="modal-box">
+        <h3>⚠️ 警告</h3>
+<pre>你正在使用分站或盗版网站
+分站没有该文件，请连接主站</pre>
+        <button class="btn-close" onclick="closeModal('modalPiracy')">关闭</button>
+    </div>
+</div>
+
+<script>
+// root文件夹点击 → 直接弹窗无权限
+document.getElementById('folderRoot').addEventListener('click',function(){
+    document.getElementById('modalNoPermission').style.display='flex';
+});
+
+// Server点击逻辑
+document.getElementById('folderServer').addEventListener('click',function(e){
+    if(e.target.id === "fileServerHelp") return;
+    const locationUrl = window.location.href;
+    if(locationUrl.includes("dd666253.github.io")){
+        //主站：展开server子文件
+        const wrap=document.getElementById('childServer');
+        wrap.style.display = wrap.style.display==="block" ? "none" : "block";
+    }else{
+        //分站盗版，弹出警告
+        document.getElementById('modalPiracy').style.display='flex';
+    }
+});
+
+//点击 help.txt 触发下载 /files/help/help.txt
+document.getElementById('fileServerHelp').addEventListener('click',function(){
+    const a = document.createElement('a');
+    a.href = "./files/help/help.txt";
+    a.download = "help.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+});
+
+//点击文件夹展开/收起子内容
+document.getElementById('folderZshBash').addEventListener('click',function(e){
+    if(e.target.id==="fileInstallHelp") return;
+    const wrap=document.getElementById('childZshBash');
+    wrap.style.display = wrap.style.display==="block" ? "none" : "block";
+})
+
+//点击文件才弹出txt弹窗
+document.getElementById('fileInstallHelp').addEventListener('click',function(){
+    document.getElementById('modalHelpTxt').style.display='flex';
+});
+
+function closeModal(id){
+    document.getElementById(id).style.display='none';
+}
+document.querySelectorAll('.modal-mask').forEach(mask=>{
+    mask.addEventListener('click',e=>{
+        if(e.target===mask){
+            mask.style.display='none';
+        }
+    })
+})
+</script>
+</body>
+</html>
