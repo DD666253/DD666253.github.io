@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>使用PlayCode</title>
+<style>
+#codeDisplay{
+  background:#244280;
+  color:#ffffff;
+  padding:12px;
+  margin-top:12px;
+  min-height:140px;
+  white-space:pre-wrap;
+}
+.center-tip{
+  text-align:center;
+  font-size:20px;
+  padding-top:40px;
+}
+#shellOutput{
+  background:#33394f;
+  color:#fff;
+  margin-top:10px;
+  padding:10px;
+  white-space:pre-wrap;
+  min-height:80px;
+}
+input[type="file"]{
+  display:none;
+}
+.mode-bar{
+  margin:8px 0;
+}
+.mode-bar button{
+  margin-right:6px;
+  padding:6px 10px;
+}
+textarea{
+  width:95%;
+}
+/*极限键盘*/
+.keyboard-panel{
+  display:none;
+  background:#222;
+  padding:12px;
+  margin-top:10px;
+}
+.keyboard-panel button{
+  padding:10px 14px;
+  margin:3px;
+  font-size:18px;
+}
+.confirm-box{
+  background:#2b2b2b;
+  padding:14px;
+  margin-top:10px;
+  color:white;
+}
+</style>
+</head>
+<body>
+<h1>使用PlayCode</h1>
+<div>首先你要知道HTML。</div>
+<button>学习测试按钮</button>
+
+<div class="mode-bar">
+  <button id="modePlay">模式 .play (tbtext指令)</button>
+  <button id="modePdev">模式 .pdev (开发测试 input)</button>
+  <button id="openLimitKeyboard">极限键盘</button>
+</div>
+
+<div class="confirm-box" id="keyboardConfirm" style="display:none;">
+<div>通知：该键盘非常纯洁，离线，很安全。页面按键仅输出小写 t b i n p u t e x 1 0。外接真实键盘可以自由输入，支持大小写。<br>是否开始？</div>
+<button id="keyboardYes">是，开始</button>
+<button id="keyboardNo">取消</button>
+</div>
+
+<textarea id="tbtext" rows="5"></textarea>
+<br>
+<button id="startBtn">开始</button>
+<button id="exportBtn">导出代码</button>
+<button id="importBtn">导入文件</button>
+<input type="file" id="fileInput">
+
+<div class="keyboard-panel" id="limitKeyboard">
+<button data-char="t">t</button>
+<button data-char="b">b</button>
+<button data-char="i">i</button>
+<button data-char="n">n</button>
+<button data-char="p">p</button>
+<button data-char="u">u</button>
+<button data-char="t">t</button>
+<button data-char="e">e</button>
+<button data-char="x">x</button>
+<button data-char="1">1</button>
+<button data-char="0">0</button>
+<button id="kbBackspace">⌫删除</button>
+<button id="kbClose">关闭键盘</button>
+</div>
+
+<div id="codeDisplay"></div>
+<div>Bash脚本(复制保存export.sh，Termux运行):</div>
+<div id="shellOutput"></div>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const exportBtn = document.getElementById("exportBtn");
+const importBtn = document.getElementById("importBtn");
+const fileInput = document.getElementById("fileInput");
+const tbtext = document.getElementById("tbtext");
+const codeDisplay = document.getElementById("codeDisplay");
+const shellOutput = document.getElementById("shellOutput");
+const modePlay = document.getElementById("modePlay");
+const modePdev = document.getElementById("modePdev");
+
+const openLimitKeyboard=document.getElementById("openLimitKeyboard");
+const keyboardConfirm=document.getElementById("keyboardConfirm");
+const keyboardYes=document.getElementById("keyboardYes");
+const keyboardNo=document.getElementById("keyboardNo");
+const limitKeyboard=document.getElementById("limitKeyboard");
+const kbBackspace=document.getElementById("kbBackspace");
+const kbClose=document.getElementById("kbClose");
+
+let currentMode = "play";
+
+modePlay.onclick = function(){
+  currentMode = "play";
+  codeDisplay.innerText = "已切换 .play｜语法 tbtext 文字";
+};
+modePdev.onclick = function(){
+  currentMode = "pdev";
+  codeDisplay.innerText = "已切换 .pdev｜语法 input 文字";
+};
+
+//极限键盘弹窗确认
+openLimitKeyboard.onclick=function(){
+  keyboardConfirm.style.display="block";
+};
+keyboardNo.onclick=function(){
+  keyboardConfirm.style.display="none";
+};
+keyboardYes.onclick=function(){
+  keyboardConfirm.style.display="none";
+  limitKeyboard.style.display="block";
+  codeDisplay.innerText="通知：极限键盘已打开。页面按键只输出小写 t b i n p u t e x 1 0；外接实体键盘可任意输入大小写。";
+};
+kbClose.onclick=function(){
+  limitKeyboard.style.display="none";
+};
+
+//页面虚拟键盘强制小写
+document.querySelectorAll("#limitKeyboard button[data-char]").forEach(btn=>{
+  btn.onclick=function(){
+    let c=this.getAttribute("data-char");
+    tbtext.value += c;
+  }
+});
+kbBackspace.onclick=function(){
+  tbtext.value = tbtext.value.slice(0,-1);
+};
+
+
+startBtn.onclick = function(){
+  let raw = tbtext.value;
+  let inputText = raw.trimEnd();
+  codeDisplay.innerHTML = "";
+  shellOutput.innerText = "";
+
+  if(currentMode === "play"){
+    if(inputText.includes("no null")){
+      codeDisplay.innerText = inputText;
+      return;
+    }
+    if(inputText.startsWith("tbtext")){
+      let pos = inputText.indexOf("tbtext");
+      let after = inputText.substring(pos + 7);
+      codeDisplay.innerText = after.trimStart();
+      return;
+    }
+    codeDisplay.innerHTML = `<div class="center-tip">Null Code</div>`;
+  }else if(currentMode === "pdev"){
+    if(inputText.startsWith("input ")){
+      let content = inputText.substring(6);
+      if(content.trim() === ""){
+        codeDisplay.innerText = "Hello World！";
+      }else{
+        codeDisplay.innerText = content;
+      }
+    }else{
+      codeDisplay.innerHTML = `<div class="center-tip">Pdev语法错误，格式：input 内容</div>`;
+    }
+  }
+};
+
+exportBtn.onclick = function(){
+  let userCode = codeDisplay.innerText;
+  let bashScript = `#!/data/data/com.termux/files/usr/bin/bash
+# PlayCode export
+usercode='${userCode.replace(/'/g,"'\\''")}'
+
+cat > user.html <<EOF
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>PlayCode输出</title>
+</head>
+<body>
+\${usercode}
+</body>
+</html>
+EOF
+echo "文件 user.html 已经生成完毕"
+`;
+  shellOutput.innerText = bashScript;
+};
+
+importBtn.onclick = function(){
+  fileInput.accept=".play,.pdev";
+  fileInput.click();
+};
+
+fileInput.onchange = function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  if(file.name.endsWith(".play")){
+    currentMode = "play";
+  }else if(file.name.endsWith(".pdev")){
+    currentMode = "pdev";
+  }else{
+    codeDisplay.innerHTML = `<div class="center-tip">不是正确的PlayCode格式，我们只推出过.play / .pdev</div>`;
+    fileInput.value="";
+    return;
+  }
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    tbtext.value=ev.target.result;
+    codeDisplay.innerText="导入成功，当前模式："+currentMode;
+  };
+  reader.readAsText(file);
+  fileInput.value="";
+};
+</script>
+</body>
+</html>
