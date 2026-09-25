@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>这个页面不存在</title>
+  <style>
+    /* 全局样式和重置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;           /* 防止扩散滚动条 */
+      background-color: #f5f7fa;  /* 柔和的浅色背景 */
+      font-family: system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;          /* 让文字不可选，更像“界面” */
+    }
+
+    /* 主容器：垂直居中 */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      text-align: center;
+      z-index: 10;               /* 保证在扩散层之上 */
+      pointer-events: none;      /* 让容器不阻挡按钮点击（但按钮需要可点击，会在子元素恢复） */
+    }
+
+    /* 页面不存在文字 */
+    .error-message {
+      font-size: clamp(2rem, 8vw, 4rem);
+      font-weight: 600;
+      color: #1e293b;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.03);
+      padding: 0 1rem;
+      pointer-events: auto;       /* 恢复文字可点击（虽无必要，但保留） */
+    }
+
+    /* 圆形按钮 */
+    .circle-btn {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #1e293b;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: #1e293b;
+      transition: transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+      pointer-events: auto;       /* 按钮可以点击 */
+      outline: none;
+    }
+
+    .circle-btn:hover {
+      background: #f1f5f9;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
+      transform: scale(1.02);
+    }
+
+    .circle-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* 扩散覆盖层 —— 初始不可见，位于按钮下方但覆盖整个屏幕 */
+    .ink-spread {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: black;
+      pointer-events: none;      /* 点击穿透，但扩散后需要阻止误触？我们通过JS控制 */
+      z-index: 100;             /* 覆盖除按钮外的所有内容 */
+      /* 初始状态：圆形半径0，不可见 */
+      clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+      transition: clip-path 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: clip-path;
+    }
+
+    /* 让扩散层在激活时可见——通过类来改变裁剪路径 */
+    .ink-spread.expand {
+      clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+    }
+  </style>
+</head>
+<body>
+  <!-- 主内容区 -->
+  <div class="container">
+    <div class="error-message">页面不存在</div>
+    <button class="circle-btn" id="jumpBtn">跳转</button>
+  </div>
+
+  <!-- 扩散覆盖层（黑色圆形扩散） -->
+  <div class="ink-spread" id="inkSpread"></div>
+
+  <script>
+    (function() {
+      const btn = document.getElementById('jumpBtn');
+      const ink = document.getElementById('inkSpread');
+      const TARGET_URL = 'https://dd666253.github.io'; // 目标地址
+
+      // 防止重复点击导致多次触发动画和跳转
+      let isTransitioning = false;
+
+      // 点击按钮的处理函数
+      function handleButtonClick(event) {
+        // 如果已经在跳转过程中，忽略后续点击
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        // 获取用户点击的位置（相对于视口的坐标）
+        let clickX, clickY;
+        
+        if (event.clientX !== undefined && event.clientY !== undefined && 
+            (event.clientX !== 0 || event.clientY !== 0)) {
+          // 鼠标点击
+          clickX = event.clientX;
+          clickY = event.clientY;
+        } else {
+          // 键盘触发：取按钮中心
+          const rect = btn.getBoundingClientRect();
+          clickX = rect.left + rect.width / 2;
+          clickY = rect.top + rect.height / 2;
+        }
+
+        // 设置扩散层圆心的 CSS 变量（相对于视口）
+        ink.style.setProperty('--x', clickX + 'px');
+        ink.style.setProperty('--y', clickY + 'px');
+
+        // 触发重绘，确保 clip-path 初始状态（0%）被应用
+        void ink.offsetWidth; 
+
+        // 添加 expand 类，开始圆形扩散动画
+        ink.classList.add('expand');
+
+        // 动画结束后跳转（与过渡时间匹配：650ms，留一点余量）
+        let jumpTimer = setTimeout(() => {
+          window.location.href = TARGET_URL;
+        }, 650);
+
+        // 监听 transitionend 作为双重保障
+        const onTransitionEnd = (e) => {
+          if (e.propertyName === 'clip-path') {
+            clearTimeout(jumpTimer);
+            window.location.href = TARGET_URL;
+            ink.removeEventListener('transitionend', onTransitionEnd);
+          }
+        };
+        ink.addEventListener('transitionend', onTransitionEnd);
+
+        // 防止用户在动画期间再次点击按钮
+        btn.style.pointerEvents = 'none';
+      }
+
+      // 绑定点击事件
+      btn.addEventListener('click', handleButtonClick);
+    })();
+  </script>
+</body>
+</html>
